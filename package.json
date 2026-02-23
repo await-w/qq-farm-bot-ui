@@ -4,6 +4,7 @@
     "dev:backend": "pnpm -C backend dev",
     "dev:frontend": "pnpm -C frontend dev",
     "dev": "pnpm build:frontend && pnpm dev:backend",
+    "lint:frontend": "pnpm -C frontend lint",
     "build:frontend": "pnpm -C frontend build",
     "build": "pnpm build:frontend",
     "package:win": "pnpm build:frontend && pnpm -C backend build:win",

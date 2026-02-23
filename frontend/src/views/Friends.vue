@@ -3,6 +3,7 @@ import { useIntervalFn } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { onMounted, ref, watch } from 'vue'
 import ConfirmModal from '@/components/ConfirmModal.vue'
+import LandCard from '@/components/LandCard.vue'
 import { useAccountStore } from '@/stores/account'
 import { useFriendStore } from '@/stores/friend'
 import { useStatusStore } from '@/stores/status'
@@ -51,43 +52,6 @@ function loadFriends() {
     friendStore.fetchFriends(currentAccountId.value)
     statusStore.fetchStatus(currentAccountId.value)
   }
-}
-
-function formatTime(sec: number) {
-  if (sec <= 0)
-    return ''
-  const h = Math.floor(sec / 3600)
-  const m = Math.floor((sec % 3600) / 60)
-  const s = sec % 60
-  return `${h > 0 ? `${h}:` : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
-}
-
-function getLandTypeName(level: number) {
-  const map: Record<number, string> = {
-    0: '未解锁',
-    1: '黄土地',
-    2: '红土地',
-    3: '黑土地',
-    4: '金土地',
-  }
-  return map[Math.max(0, Math.min(4, Number(level) || 0))] || '土地'
-}
-
-function getLandStatusClass(land: any) {
-  const status = land.status
-  if (status === 'locked')
-    return 'bg-gray-100 dark:bg-gray-800 opacity-60'
-  if (status === 'empty')
-    return 'bg-white dark:bg-gray-800'
-  if (status === 'harvestable')
-    return 'bg-yellow-50 dark:bg-yellow-900/10 border-yellow-200 dark:border-yellow-800'
-  if (status === 'growing')
-    return 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800'
-  if (status === 'dead')
-    return 'bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600'
-  if (status === 'stealable')
-    return 'bg-purple-50 dark:bg-purple-900/10 border-purple-200 dark:border-purple-800'
-  return 'bg-white dark:bg-gray-800'
 }
 
 useIntervalFn(() => {
@@ -148,13 +112,6 @@ function getFriendStatusText(friend: any) {
   if (p.insectNum)
     info.push(`虫${p.insectNum}`)
   return info.length ? info.join(' ') : '无操作'
-}
-function getSafeImageUrl(url: string) {
-  if (!url)
-    return ''
-  if (url.startsWith('http://'))
-    return url.replace('http://', 'https://')
-  return url
 }
 </script>
 
@@ -267,51 +224,11 @@ function getSafeImageUrl(url: string) {
             无土地数据
           </div>
           <div v-else class="grid grid-cols-3 gap-2 lg:grid-cols-8 md:grid-cols-5 sm:grid-cols-4">
-            <div
+            <LandCard
               v-for="land in friendLands[friend.gid]"
               :key="land.id"
-              class="relative min-h-[140px] flex flex-col items-center border rounded-lg p-2 transition dark:border-gray-700 hover:shadow-md"
-              :class="getLandStatusClass(land)"
-            >
-              <div class="absolute left-1 top-1 text-[10px] text-gray-400 font-mono">
-                #{{ land.id }}
-              </div>
-
-              <div class="mb-1 mt-4 h-10 w-10 flex items-center justify-center">
-                <img
-                  v-if="land.seedImage"
-                  :src="getSafeImageUrl(land.seedImage)"
-                  class="max-h-full max-w-full object-contain"
-                  loading="lazy"
-                  referrerpolicy="no-referrer"
-                >
-                <div v-else class="i-carbon-sprout text-xl text-gray-300" />
-              </div>
-
-              <div class="w-full truncate px-1 text-center text-xs font-bold" :title="land.plantName">
-                {{ land.plantName || '-' }}
-              </div>
-
-              <div class="mb-0.5 mt-0.5 w-full text-center text-[10px] text-gray-500">
-                <span v-if="land.matureInSec > 0" class="text-orange-500">
-                  {{ formatTime(land.matureInSec) }}后成熟
-                </span>
-                <span v-else>
-                  {{ land.phaseName || (land.status === 'locked' ? '未解锁' : '未开垦') }}
-                </span>
-              </div>
-
-              <div class="mb-1 text-[10px] text-gray-400">
-                {{ getLandTypeName(land.level) }}
-              </div>
-
-              <div class="mt-auto flex origin-bottom scale-90 gap-0.5 text-[10px]">
-                <span v-if="land.needWater" class="rounded bg-blue-100 px-0.5 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">水</span>
-                <span v-if="land.needWeed" class="rounded bg-green-100 px-0.5 text-green-700 dark:bg-green-900/30 dark:text-green-400">草</span>
-                <span v-if="land.needBug" class="rounded bg-red-100 px-0.5 text-red-700 dark:bg-red-900/30 dark:text-red-400">虫</span>
-                <span v-if="land.status === 'harvestable'" class="rounded bg-orange-100 px-0.5 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">可偷</span>
-              </div>
-            </div>
+              :land="land"
+            />
           </div>
         </div>
       </div>

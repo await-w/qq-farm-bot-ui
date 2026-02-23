@@ -1,5 +1,9 @@
+import { useStorage } from '@vueuse/core'
 import axios from 'axios'
 import { useToastStore } from '@/stores/toast'
+
+const tokenRef = useStorage('admin_token', '')
+const accountIdRef = useStorage('current_account_id', '')
 
 const api = axios.create({
   baseURL: '/',
@@ -7,11 +11,11 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('admin_token')
+  const token = tokenRef.value
   if (token) {
     config.headers['x-admin-token'] = token
   }
-  const accountId = localStorage.getItem('current_account_id')
+  const accountId = accountIdRef.value
   if (accountId) {
     config.headers['x-account-id'] = accountId
   }
@@ -29,7 +33,7 @@ api.interceptors.response.use((response) => {
     if (error.response.status === 401) {
       // Avoid redirect loop or multiple redirects
       if (!window.location.pathname.includes('/login')) {
-        localStorage.removeItem('admin_token')
+        tokenRef.value = ''
         window.location.href = '/login'
         toast.warning('登录已过期，请重新登录')
       }

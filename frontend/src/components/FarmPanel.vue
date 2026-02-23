@@ -3,6 +3,7 @@ import { useIntervalFn } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import ConfirmModal from '@/components/ConfirmModal.vue'
+import LandCard from '@/components/LandCard.vue'
 import { useAccountStore } from '@/stores/account'
 import { useFarmStore } from '@/stores/farm'
 import { useStatusStore } from '@/stores/status'
@@ -21,43 +22,6 @@ const confirmConfig = ref({
   message: '',
   opType: '',
 })
-
-function getLandTypeName(level: number) {
-  const map: Record<number, string> = {
-    0: '未解锁',
-    1: '黄土地',
-    2: '红土地',
-    3: '黑土地',
-    4: '金土地',
-  }
-  return map[Math.max(0, Math.min(4, Number(level) || 0))] || '土地'
-}
-
-function getLandStatusClass(land: any) {
-  const status = land.status
-  if (status === 'locked')
-    return 'bg-gray-100 dark:bg-gray-800 opacity-60'
-  if (status === 'empty')
-    return 'bg-white dark:bg-gray-800'
-  if (status === 'harvestable')
-    return 'bg-yellow-50 dark:bg-yellow-900/10 border-yellow-200 dark:border-yellow-800'
-  if (status === 'growing')
-    return 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800'
-  if (status === 'dead')
-    return 'bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600'
-  if (status === 'stealable')
-    return 'bg-purple-50 dark:bg-purple-900/10 border-purple-200 dark:border-purple-800'
-  return 'bg-white dark:bg-gray-800'
-}
-
-function formatTime(sec: number) {
-  if (sec <= 0)
-    return ''
-  const h = Math.floor(sec / 3600)
-  const m = Math.floor((sec % 3600) / 60)
-  const s = sec % 60
-  return `${h > 0 ? `${h}:` : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
-}
 
 async function executeOperate() {
   if (!currentAccountId.value || !confirmConfig.value.opType)
@@ -92,6 +56,14 @@ function handleOperate(opType: string) {
   confirmVisible.value = true
 }
 
+const operations = [
+  { type: 'harvest', label: '收获', icon: 'i-carbon-wheat', color: 'bg-blue-600 hover:bg-blue-700' },
+  { type: 'clear', label: '除草/虫', icon: 'i-carbon-clean', color: 'bg-teal-600 hover:bg-teal-700' },
+  { type: 'plant', label: '种植', icon: 'i-carbon-sprout', color: 'bg-green-600 hover:bg-green-700' },
+  { type: 'upgrade', label: '升级土地', icon: 'i-carbon-upgrade', color: 'bg-purple-600 hover:bg-purple-700' },
+  { type: 'all', label: '一键全收', icon: 'i-carbon-flash', color: 'bg-orange-600 hover:bg-orange-700' },
+]
+
 function refresh() {
   if (currentAccountId.value) {
     farmStore.fetchLands(currentAccountId.value)
@@ -120,13 +92,6 @@ onMounted(() => {
 onUnmounted(() => {
   pause()
 })
-function getSafeImageUrl(url: string) {
-  if (!url)
-    return ''
-  if (url.startsWith('http://'))
-    return url.replace('http://', 'https://')
-  return url
-}
 </script>
 
 <template>
@@ -140,39 +105,15 @@ function getSafeImageUrl(url: string) {
         </h3>
         <div class="flex flex-wrap gap-2">
           <button
-            class="rounded bg-blue-600 px-3 py-1.5 text-sm text-white transition hover:bg-blue-700 disabled:opacity-50"
+            v-for="op in operations"
+            :key="op.type"
+            class="flex items-center gap-1.5 rounded px-3 py-1.5 text-sm text-white transition disabled:cursor-not-allowed disabled:opacity-50"
+            :class="op.color"
             :disabled="operating"
-            @click="handleOperate('harvest')"
+            @click="handleOperate(op.type)"
           >
-            收获
-          </button>
-          <button
-            class="rounded bg-gray-600 px-3 py-1.5 text-sm text-white transition hover:bg-gray-700 disabled:opacity-50"
-            :disabled="operating"
-            @click="handleOperate('clear')"
-          >
-            除草/虫
-          </button>
-          <button
-            class="rounded bg-green-600 px-3 py-1.5 text-sm text-white transition hover:bg-green-700 disabled:opacity-50"
-            :disabled="operating"
-            @click="handleOperate('plant')"
-          >
-            种植
-          </button>
-          <button
-            class="rounded bg-purple-600 px-3 py-1.5 text-sm text-white transition hover:bg-purple-700 disabled:opacity-50"
-            :disabled="operating"
-            @click="handleOperate('upgrade')"
-          >
-            升级土地
-          </button>
-          <button
-            class="rounded bg-orange-600 px-3 py-1.5 text-sm text-white transition hover:bg-orange-700 disabled:opacity-50"
-            :disabled="operating"
-            @click="handleOperate('all')"
-          >
-            一键全收
+            <div :class="op.icon" />
+            {{ op.label }}
           </button>
         </div>
       </div>
@@ -220,51 +161,11 @@ function getSafeImageUrl(url: string) {
         </div>
 
         <div v-else class="grid grid-cols-2 gap-4 lg:grid-cols-6 md:grid-cols-4 sm:grid-cols-3">
-          <div
+          <LandCard
             v-for="land in lands"
             :key="land.id"
-            class="relative min-h-[140px] flex flex-col items-center border rounded-lg p-2 transition dark:border-gray-700 hover:shadow-md"
-            :class="getLandStatusClass(land)"
-          >
-            <div class="absolute left-1 top-1 text-[10px] text-gray-400 font-mono">
-              #{{ land.id }}
-            </div>
-
-            <div class="mb-1 mt-4 h-10 w-10 flex items-center justify-center">
-              <img
-                v-if="land.seedImage"
-                :src="getSafeImageUrl(land.seedImage)"
-                class="max-h-full max-w-full object-contain"
-                loading="lazy"
-                referrerpolicy="no-referrer"
-              >
-              <div v-else class="i-carbon-sprout text-xl text-gray-300" />
-            </div>
-
-            <div class="w-full truncate px-1 text-center text-xs font-bold" :title="land.plantName">
-              {{ land.plantName || '-' }}
-            </div>
-
-            <div class="mb-0.5 mt-0.5 w-full text-center text-[10px] text-gray-500">
-              <span v-if="land.matureInSec > 0" class="text-orange-500">
-                {{ formatTime(land.matureInSec) }}后成熟
-              </span>
-              <span v-else>
-                {{ land.phaseName || (land.status === 'locked' ? '未解锁' : '未开垦') }}
-              </span>
-            </div>
-
-            <div class="mb-1 text-[10px] text-gray-400">
-              {{ getLandTypeName(land.level) }}
-            </div>
-
-            <!-- Status Badges -->
-            <div class="mt-auto flex origin-bottom scale-90 gap-0.5 text-[10px]">
-              <span v-if="land.needWater" class="rounded bg-blue-100 px-0.5 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">水</span>
-              <span v-if="land.needWeed" class="rounded bg-green-100 px-0.5 text-green-700 dark:bg-green-900/30 dark:text-green-400">草</span>
-              <span v-if="land.needBug" class="rounded bg-red-100 px-0.5 text-red-700 dark:bg-red-900/30 dark:text-red-400">虫</span>
-            </div>
-          </div>
+            :land="land"
+          />
         </div>
       </div>
     </div>

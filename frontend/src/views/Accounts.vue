@@ -129,24 +129,26 @@ function handleSaved() {
             </div>
           </div>
           <div class="flex flex-col items-end gap-2">
-            <span
-              class="rounded-full px-2 py-1 text-xs font-medium"
-              :class="acc.running ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'"
+            <BaseButton
+              variant="secondary"
+              size="sm"
+              class="w-20 border rounded-full shadow-sm transition-all duration-500 ease-in-out active:scale-95"
+              :class="acc.running ? 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100 focus:ring-red-500 active:border-red-300 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30 dark:focus:ring-red-500 dark:active:border-red-700' : 'border-green-200 bg-green-50 text-green-600 hover:bg-green-100 focus:ring-green-500 active:border-green-300 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/30 dark:focus:ring-green-500 dark:active:border-green-700'"
+              @click="toggleAccount(acc)"
             >
-              {{ acc.running ? '运行中' : '已停止' }}
-            </span>
+              <div :class="acc.running ? 'i-carbon-stop-filled' : 'i-carbon-play-filled'" class="mr-1" />
+              {{ acc.running ? '停止' : '启动' }}
+            </BaseButton>
           </div>
         </div>
 
         <div class="mt-2 flex items-center justify-between border-t border-gray-100 pt-4 dark:border-gray-700">
-          <BaseButton
-            variant="secondary"
-            size="sm"
-            :class="acc.running ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'"
-            @click="toggleAccount(acc)"
-          >
-            {{ acc.running ? '停止' : '启动' }}
-          </BaseButton>
+          <div class="flex items-center gap-2 text-sm text-gray-500">
+            <span class="flex items-center gap-1">
+              <div class="h-2 w-2 rounded-full" :class="acc.running ? 'bg-green-500' : 'bg-gray-300'" />
+              {{ acc.running ? '运行中' : '已停止' }}
+            </span>
+          </div>
 
           <div class="flex gap-2">
             <BaseButton

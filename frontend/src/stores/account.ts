@@ -1,3 +1,4 @@
+import { useStorage } from '@vueuse/core'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import api from '@/api'
@@ -20,7 +21,7 @@ export interface AccountLog {
 
 export const useAccountStore = defineStore('account', () => {
   const accounts = ref<Account[]>([])
-  const currentAccountId = ref<string>(localStorage.getItem('current_account_id') || '')
+  const currentAccountId = useStorage('current_account_id', '')
   const loading = ref(false)
   const logs = ref<AccountLog[]>([])
 
@@ -41,7 +42,6 @@ export const useAccountStore = defineStore('account', () => {
           const found = accounts.value.find(a => String(a.id) === currentAccountId.value)
           if (!found && accounts.value[0]) {
             currentAccountId.value = String(accounts.value[0].id)
-            localStorage.setItem('current_account_id', currentAccountId.value)
           }
         }
       }
@@ -56,7 +56,6 @@ export const useAccountStore = defineStore('account', () => {
 
   function selectAccount(id: string) {
     currentAccountId.value = id
-    localStorage.setItem('current_account_id', id)
   }
 
   function setCurrentAccount(acc: Account) {
@@ -77,7 +76,6 @@ export const useAccountStore = defineStore('account', () => {
     await api.delete(`/api/accounts/${id}`)
     if (currentAccountId.value === id) {
       currentAccountId.value = ''
-      localStorage.removeItem('current_account_id')
     }
     await fetchAccounts()
   }

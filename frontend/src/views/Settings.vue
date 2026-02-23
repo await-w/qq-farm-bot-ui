@@ -181,7 +181,7 @@ const fertilizerOptions = [
 ]
 
 const plantingStrategyOptions = [
-  { label: '优先种植种子 (下方选择)', value: 'preferred' },
+  { label: '优先种植种子', value: 'preferred' },
   { label: '最高等级作物', value: 'level' },
   { label: '最大经验/时', value: 'max_exp' },
   { label: '最大普通肥经验/时', value: 'max_fert_exp' },
@@ -190,25 +190,25 @@ const plantingStrategyOptions = [
 ]
 
 const channelOptions = [
-  { label: 'webhook (自定义接口)', value: 'webhook' },
-  { label: 'qmsg', value: 'qmsg' },
-  { label: 'serverchan', value: 'serverchan' },
-  { label: 'pushplus', value: 'pushplus' },
-  { label: 'pushplushxtrip', value: 'pushplushxtrip' },
-  { label: 'dingtalk', value: 'dingtalk' },
-  { label: 'wecom', value: 'wecom' },
-  { label: 'bark', value: 'bark' },
-  { label: 'gocqhttp', value: 'gocqhttp' },
-  { label: 'onebot', value: 'onebot' },
-  { label: 'atri', value: 'atri' },
-  { label: 'pushdeer', value: 'pushdeer' },
-  { label: 'igot', value: 'igot' },
-  { label: 'telegram', value: 'telegram' },
-  { label: 'feishu', value: 'feishu' },
-  { label: 'ifttt', value: 'ifttt' },
-  { label: 'wecombot', value: 'wecombot' },
-  { label: 'discord', value: 'discord' },
-  { label: 'wxpusher', value: 'wxpusher' },
+  { label: 'Webhook(自定义接口)', value: 'webhook' },
+  { label: 'Qmsg 酱', value: 'qmsg' },
+  { label: 'Server 酱', value: 'serverchan' },
+  { label: 'Push Plus', value: 'pushplus' },
+  { label: 'Push Plus Hxtrip', value: 'pushplushxtrip' },
+  { label: '钉钉', value: 'dingtalk' },
+  { label: '企业微信', value: 'wecom' },
+  { label: 'Bark', value: 'bark' },
+  { label: 'Go-cqhttp', value: 'gocqhttp' },
+  { label: 'OneBot', value: 'onebot' },
+  { label: 'Atri', value: 'atri' },
+  { label: 'PushDeer', value: 'pushdeer' },
+  { label: 'iGot', value: 'igot' },
+  { label: 'Telegram', value: 'telegram' },
+  { label: '飞书', value: 'feishu' },
+  { label: 'IFTTT', value: 'ifttt' },
+  { label: '企业微信群机器人', value: 'wecombot' },
+  { label: 'Discord', value: 'discord' },
+  { label: 'WxPusher', value: 'wxpusher' },
 ]
 
 const reloginUrlModeOptions = [

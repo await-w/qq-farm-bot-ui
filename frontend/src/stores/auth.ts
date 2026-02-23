@@ -1,10 +1,10 @@
+import { useStorage } from '@vueuse/core'
 import axios from 'axios'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 export const useAuthStore = defineStore('auth', () => {
-  const token = ref(localStorage.getItem('admin_token') || '')
+  const token = useStorage('admin_token', '')
   const router = useRouter()
 
   const isAuthenticated = () => !!token.value
@@ -14,7 +14,6 @@ export const useAuthStore = defineStore('auth', () => {
       const res = await axios.post('/api/login', { password })
       if (res.data.ok) {
         token.value = res.data.data.token
-        localStorage.setItem('admin_token', token.value)
         return true
       }
       return false
@@ -27,7 +26,6 @@ export const useAuthStore = defineStore('auth', () => {
 
   function logout() {
     token.value = ''
-    localStorage.removeItem('admin_token')
     router.push('/login')
   }
 

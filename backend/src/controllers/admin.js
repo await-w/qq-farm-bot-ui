@@ -14,6 +14,7 @@ const { QRLoginSession, MiniProgramLoginSession } = require('../services/qrlogin
 const { CookieUtils } = require('../utils/qrutils');
 const { getResourcePath } = require('../config/runtime-paths');
 const { getLevelExpProgress } = require('../config/gameConfig');
+const { version } = require('../../package.json');
 
 const hashPassword = (pwd) => crypto.createHash('sha256').update(String(pwd || '')).digest('hex');
 
@@ -103,7 +104,7 @@ function startAdminServer(dataProvider) {
     });
 
     app.get('/api/ping', (req, res) => {
-        res.json({ ok: true, data: { ok: true, uptime: process.uptime() } });
+        res.json({ ok: true, data: { ok: true, uptime: process.uptime(), version } });
     });
 
     app.post('/api/logout', (req, res) => {

@@ -6,6 +6,7 @@ import { useRoute } from 'vue-router'
 import api from '@/api'
 import AccountModal from '@/components/AccountModal.vue'
 import RemarkModal from '@/components/RemarkModal.vue'
+import ThemeToggle from '@/components/ThemeToggle.vue'
 
 import { menuRoutes } from '@/router/menu'
 import { useAccountStore } from '@/stores/account'
@@ -28,6 +29,7 @@ const wsErrorNotifiedAt = ref<Record<string, number>>({})
 
 const systemConnected = ref(true)
 const serverUptimeBase = ref(0)
+const serverVersion = ref('')
 const lastPingTime = ref(Date.now())
 const now = useNow()
 const formattedTime = useDateFormat(now, 'YYYY-MM-DD HH:mm:ss')
@@ -36,9 +38,14 @@ async function checkConnection() {
   try {
     const res = await api.get('/api/ping')
     systemConnected.value = true
-    if (res.data.ok && res.data.data.uptime) {
-      serverUptimeBase.value = res.data.data.uptime
-      lastPingTime.value = Date.now()
+    if (res.data.ok && res.data.data) {
+      if (res.data.data.uptime) {
+        serverUptimeBase.value = res.data.data.uptime
+        lastPingTime.value = Date.now()
+      }
+      if (res.data.data.version) {
+        serverVersion.value = res.data.data.version
+      }
     }
   }
   catch {
@@ -325,11 +332,19 @@ watch(
           />
           <span>{{ connectionStatus.text }}</span>
         </div>
-        <span>{{ uptime }}</span>
+        <div class="flex items-center gap-2">
+          <span>{{ uptime }}</span>
+          <ThemeToggle />
+        </div>
       </div>
-      <div class="mt-1 flex items-center justify-between text-center text-xs text-gray-400 font-mono">
-        <span>{{ formattedTime }}</span>
-        <span class="opacity-50">v{{ version }}</span>
+      <div class="mt-1 flex flex-col gap-0.5 text-xs text-gray-400 font-mono">
+        <div class="flex items-center justify-between">
+          <span>{{ formattedTime }}</span>
+        </div>
+        <div class="flex items-center justify-between opacity-50">
+          <span>Web v{{ version }}</span>
+          <span v-if="serverVersion">Core v{{ serverVersion }}</span>
+        </div>
       </div>
     </div>
   </aside>
