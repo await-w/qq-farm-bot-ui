@@ -5,6 +5,7 @@ let qrMode = 'add';
 let currentQRCode = '';
 let currentLoginUrl = '';
 let qrCheckInterval = null;
+let qrLib = null;
 
 function resetQrState() {
     currentQRCode = '';
@@ -109,9 +110,10 @@ async function generateQRCode() {
             const display = $('qr-code-display');
 
             if (img && display) {
-                // 使用 qrcode 字段（QR 图片 URL）
-                img.src = result.data.qrcode || result.data.url;
-                img.style.display = 'block';
+                if(!qrLib)
+                    qrLib = new QRCode(img, { correctLevel: QRCode.CorrectLevel.M });
+                qrLib.clear();
+                qrLib.makeCode(result.data.url);
                 display.style.display = 'grid';
             }
             startQRCheck();
