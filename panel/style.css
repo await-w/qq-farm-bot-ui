@@ -1188,6 +1188,7 @@ body.light-theme #btn-qr-open-url {
 .qr-wrap { min-height: 200px; display: grid; place-items: center; gap: 6px; }
 .qr-display { display: grid; place-items: center; gap: 6px; }
 #qr-code-img { width: 184px; height: 184px; border-radius: 8px; border: 1px solid var(--line); background: #fff; }
+#qr-code-img > img { width: 100%; height: 100%; }
 
 /* Add account modal (desktop-first) */
 #modal-add-acc .modal-content {

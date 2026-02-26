@@ -422,7 +422,7 @@
             <button id="btn-qr-generate" class="btn btn-primary" type="button">生成二维码</button>
             <button id="btn-qr-open-url" class="btn" type="button">跳转QQ登录</button>
             <div id="qr-code-display" class="qr-display" style="display:none">
-              <img id="qr-code-img" alt="二维码"><div id="qr-status">等待扫码中...</div>
+              <div id="qr-code-img"></div><div id="qr-status">等待扫码中...</div>
             </div>
           </div>
         </div>
@@ -432,6 +432,7 @@
     </div>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="js/core.js?v=2026022216"></script>
   <script src="js/polling-accounts.js?v=2026022216"></script>
   <script src="js/pages.js?v=2026022216"></script>
