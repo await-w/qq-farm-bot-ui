@@ -817,4 +817,3 @@ async function handleTestOffline() {
 <style scoped lang="postcss">
 /* Custom styles if needed */
 </style>
-

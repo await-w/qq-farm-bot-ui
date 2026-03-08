@@ -142,7 +142,7 @@ function normalizeOfflineReminder(input) {
 function normalizeApiDomain(input, fallback = DEFAULT_QR_LOGIN.apiDomain) {
     const raw = String(input || '').trim();
     if (!raw) return fallback;
-    const normalized = /^https?:\/\//i.test(raw) ? raw : ('https://' + raw);
+    const normalized = /^https?:\/\//i.test(raw) ? raw : (`https://${  raw}`);
     try {
         const parsed = new URL(normalized);
         const host = String(parsed.host || '').trim();

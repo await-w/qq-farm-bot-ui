@@ -197,4 +197,3 @@ export const useSettingStore = defineStore('setting', () => {
 
   return { settings, loading, fetchSettings, saveSettings, saveOfflineConfig, saveQrLoginConfig, changeAdminPassword }
 })
-
